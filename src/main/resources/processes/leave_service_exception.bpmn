@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:tns="http://www.activiti.org/test" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" expressionLanguage="http://www.w3.org/1999/XPath" id="m1533803548568" name="" targetNamespace="http://www.activiti.org/test" typeLanguage="http://www.w3.org/2001/XMLSchema">
+  <process id="cc" isClosed="false" isExecutable="true" name="带有异常情况的表单JAVAservice服务的请假流程" processType="None">
+    <documentation id="leave_service_D_1"><![CDATA[带有表单功能的请假流程，使用表单传递参数]]></documentation>
+    <startEvent id="startevent1" name="Start">
+      <extensionElements>
+        <activiti:formProperty datePattern="yyyy-MM-dd" id="startdate" name="请假开始日期" required="true" type="date"/>
+        <activiti:formProperty datePattern="yyyy-MM-dd" id="enddate" name="请假结束日期" required="true" type="date"/>
+        <activiti:formProperty id="reason" name="请假原因" required="true" type="string"/>
+      </extensionElements>
+    </startEvent>
+    <endEvent id="endevent1" name="End">
+      <extensionElements>
+        <activiti:formProperty datePattern="yyyy-MM-dd" id="startdate" name="请假开始日期" required="true" type="date"/>
+        <activiti:formProperty datePattern="yyyy-MM-dd" id="enddate" name="请假结束日期" required="true" type="date"/>
+        <activiti:formProperty id="reason" name="请假原因" required="true" type="string"/>
+        <activiti:formProperty id="memo" name="审批意见" required="true" type="string"/>
+        <activiti:formProperty id="postil" name="批注" required="true" type="string"/>
+      </extensionElements>
+    </endEvent>
+    <userTask activiti:assignee="user1" activiti:candidateGroups="Employee" activiti:exclusive="true" id="user1" name="提出申请">
+      <extensionElements>
+        <activiti:formProperty datePattern="yyyy-MM-dd" id="startdate" name="请假开始日期" required="true" type="date"/>
+        <activiti:formProperty datePattern="yyy-MM-dd" id="enddate" name="请假结束日期" required="true" type="date"/>
+        <activiti:formProperty id="reason" name="请假原因" required="true" type="string"/>
+        <activiti:formProperty id="memo" name="审批意见" required="true" type="enum">
+          <activiti:value id="true" name="同意"/>
+          <activiti:value id="false" name="拒绝"/>
+        </activiti:formProperty>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="user1"/>
+    <serviceTask activiti:class="com.abc.springbootactiviti.demo.JavaFormServiceDemo" activiti:exclusive="true" id="servicetask1" name="Java服务调用"/>
+    <sequenceFlow id="flow2" sourceRef="user1" targetRef="servicetask1"/>
+    <sequenceFlow id="flow3" sourceRef="servicetask1" targetRef="endevent1"/>
+    <boundaryEvent attachedToRef="servicetask1" cancelActivity="true" id="boundaryerror1" name="Error">
+      <errorEventDefinition id="boundaryerror1_ED_1"/>
+    </boundaryEvent>
+    <userTask activiti:assignee="wangwu" activiti:exclusive="true" id="error_process" name="异常处理"/>
+    <sequenceFlow id="flow6" sourceRef="boundaryerror1" targetRef="error_process"/>
+    <sequenceFlow id="flow7" sourceRef="error_process" targetRef="servicetask1"/>
+  </process>
+  <bpmndi:BPMNDiagram documentation="background=#3C3F41;count=1;horizontalcount=1;orientation=0;width=842.4;height=1195.2;imageableWidth=832.4;imageableHeight=1185.2;imageableX=5.0;imageableY=5.0" id="Diagram-_1" name="New Diagram">
+    <bpmndi:BPMNPlane bpmnElement="cc">
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="Shape-startevent1">
+        <omgdc:Bounds height="32.0" width="32.0" x="80.0" y="240.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="32.0" width="32.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="Shape-endevent1">
+        <omgdc:Bounds height="32.0" width="32.0" x="640.0" y="240.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="32.0" width="32.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="user1" id="Shape-user1">
+        <omgdc:Bounds height="55.0" width="105.0" x="220.0" y="230.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="55.0" width="105.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="servicetask1" id="Shape-servicetask1">
+        <omgdc:Bounds height="55.0" width="105.0" x="410.0" y="230.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="55.0" width="105.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="error_process" id="Shape-error_process">
+        <omgdc:Bounds height="55.0" width="105.0" x="490.0" y="360.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="55.0" width="105.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="boundaryerror1" id="Shape-boundaryerror1">
+        <omgdc:Bounds height="32.0" width="32.0" x="480.0" y="270.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="0.0" width="0.0" x="70.0" y="40.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1" sourceElement="startevent1" targetElement="user1">
+        <omgdi:waypoint x="112.0" y="256.0"/>
+        <omgdi:waypoint x="220.0" y="257.5"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="-1.0" width="-1.0" x="-1.0" y="-1.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2" sourceElement="user1" targetElement="servicetask1">
+        <omgdi:waypoint x="325.0" y="257.5"/>
+        <omgdi:waypoint x="410.0" y="257.5"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="-1.0" width="-1.0" x="-1.0" y="-1.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow3" id="BPMNEdge_flow3" sourceElement="servicetask1" targetElement="endevent1">
+        <omgdi:waypoint x="515.0" y="257.5"/>
+        <omgdi:waypoint x="640.0" y="256.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="-1.0" width="-1.0" x="-1.0" y="-1.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow6" id="BPMNEdge_flow6" sourceElement="boundaryerror1" targetElement="error_process">
+        <omgdi:waypoint x="501.0" y="301.19868415357064"/>
+        <omgdi:waypoint x="501.0" y="360.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="-1.0" width="-1.0" x="-1.0" y="-1.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow7" id="BPMNEdge_flow7" sourceElement="error_process" targetElement="servicetask1">
+        <omgdi:waypoint x="490.0" y="387.0"/>
+        <omgdi:waypoint x="391.0" y="387.0"/>
+        <omgdi:waypoint x="410.0" y="257.5"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="-1.0" width="-1.0" x="-1.0" y="-1.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

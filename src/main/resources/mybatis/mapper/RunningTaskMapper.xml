@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.abc.springbootactiviti.mapper.TaskQueryMapper">
+
+    <resultMap id="BaseResultMap" type="com.abc.springbootactiviti.chapter13.RunningTask">
+        <result column="ID_" jdbcType="VARCHAR" property="id"/>
+        <result column="NAME_" jdbcType="VARCHAR" property="name"/>
+        <result column="ASSIGNEE_" jdbcType="VARCHAR" property="assignee"/>
+        <result column="CREATE_TIME_" jdbcType="DATE" property="createTime"/>
+        <result column="PROC_INST_ID_" jdbcType="VARCHAR" property="processInstanceId"/>
+        <result column="PROC_DEF_ID_" jdbcType="VARCHAR" property="processDefinitionId"/>
+        <result column="PROCESS_NAME" jdbcType="VARCHAR" property="processName"/>
+    </resultMap>
+
+    <resultMap id="PengdingTaskMap" type="com.abc.springbootactiviti.beans.PengdingTask">
+        <result column="TASK_ID" jdbcType="VARCHAR" property="task_id"/>
+        <result column="PROC_INST_ID" jdbcType="VARCHAR" property="proc_inst_id"/>
+        <result column="ACT_ID" jdbcType="VARCHAR" property="act_id"/>
+        <result column="ACT_NAME" jdbcType="VARCHAR" property="act_name"/>
+        <result column="ASSIGNEE" jdbcType="VARCHAR" property="assignee"/>
+        <result column="DELEGATION_ID" jdbcType="VARCHAR" property="delegation_id"/>
+        <result column="DESCRIPTION" jdbcType="VARCHAR" property="description"/>
+        <result column="CREATE_TIME" jdbcType="VARCHAR" property="create_time"/>
+        <result column="DUE_DATE" jdbcType="VARCHAR" property="due_date"/>
+        <result column="SUSPENSION_STATE" jdbcType="VARCHAR" property="suspension_state"/>
+        <result column="CANDIDATE" jdbcType="VARCHAR" property="candidate"/>
+    </resultMap>
+
+    <select id="selectRunningTasks" resultMap="BaseResultMap">
+        select art.ID_, art.NAME_, art.ASSIGNEE_, art.CREATE_TIME_,art.PROC_INST_ID_, art.PROC_DEF_ID_, arp.NAME_ PROCESS_NAME from ACT_RU_TASK art inner join ACT_RE_PROCDEF arp on art.PROC_DEF_ID_ = arp.ID_ where arp.SUSPENSION_STATE_ = '1'
+    </select>
+
+    <select id="getPengdingTasksByUserId" resultMap="PengdingTaskMap" parameterType="java.lang.String">
+        SELECT
+    A.ID_ AS TASK_ID,
+    A.PROC_INST_ID_ PROC_INST_ID,
+    A.TASK_DEF_KEY_ AS ACT_ID,
+    A.NAME_ AS ACT_NAME,
+    A.ASSIGNEE_ AS ASSIGNEE,
+    A.DELEGATION_ AS DELEGATION_ID,
+    A.DESCRIPTION_ AS DESCRIPTION,
+    DATE_FORMAT(A.CREATE_TIME_, '%Y-%m-%d %H:%i:%s') AS CREATE_TIME,
+    DATE_FORMAT(A.DUE_DATE_, '%Y-%m-%d %H:%i:%s') AS DUE_DATE,
+    A.SUSPENSION_STATE_ AS SUSPENSION_STATE,
+    I.USER_ID CANDIDATE
+FROM
+    ACT_RU_TASK A
+        LEFT JOIN
+    (SELECT DISTINCT
+        *
+    FROM
+        (SELECT
+        TASK_ID_, USER_ID_ USER_ID
+    FROM
+        ACT_RU_IDENTITYLINK I, ACT_RU_TASK T
+    WHERE
+        TASK_ID_ IS NOT NULL
+            AND USER_ID_ IS NOT NULL
+            AND I.TASK_ID_ = T.ID_
+            AND T.ASSIGNEE_ IS NULL
+            AND TYPE_ = 'candidate') U) I ON A.ID_ = I.TASK_ID_
+WHERE
+    A.SUSPENSION_STATE_ = '1'
+        AND (A.ASSIGNEE_ = #{userId} OR I.USER_ID = #{userId})
+    </select>
+    
+        <select id="getTotalNumOfPengdingTasksByUserId" resultMap="PengdingTaskMap" parameterType="java.lang.String">
+        SELECT count(A.ID_) count    
+			FROM
+			    ACT_RU_TASK A
+			        LEFT JOIN
+			    (SELECT DISTINCT
+			        *
+			    FROM
+			        (SELECT
+			        TASK_ID_, USER_ID_ USER_ID
+			    FROM
+			        ACT_RU_IDENTITYLINK I, ACT_RU_TASK T
+			    WHERE
+			        TASK_ID_ IS NOT NULL
+			            AND USER_ID_ IS NOT NULL
+			            AND I.TASK_ID_ = T.ID_
+			            AND T.ASSIGNEE_ IS NULL
+			            AND TYPE_ = 'candidate') U) I ON A.ID_ = I.TASK_ID_
+			WHERE
+			    A.SUSPENSION_STATE_ = '1'
+			        AND (A.ASSIGNEE_ = #{userId} OR I.USER_ID = #{userId})
+    </select>
+
+    <select id="getPengdingTasksByGroup" resultMap="PengdingTaskMap" parameterType="java.util.List">
+        SELECT
+        A.ID_ AS TASK_ID,
+        A.PROC_INST_ID_ PROC_INST_ID,
+        A.TASK_DEF_KEY_ AS ACT_ID,
+        A.NAME_ AS ACT_NAME,
+        A.ASSIGNEE_ AS ASSIGNEE,
+        A.DELEGATION_ AS DELEGATION_ID,
+        A.DESCRIPTION_ AS DESCRIPTION,
+        DATE_FORMAT(A.CREATE_TIME_, '%Y-%m-%d %H:%i:%s') AS CREATE_TIME,
+        DATE_FORMAT(A.DUE_DATE_, '%Y-%m-%d %H:%i:%s') AS DUE_DATE,
+        A.SUSPENSION_STATE_ AS SUSPENSION_STATE,
+        USER_ID USER_ID,
+        I.GROUP_ID CANDIDATEGROUP
+        FROM
+        ACT_RU_TASK A
+        LEFT JOIN
+        (SELECT DISTINCT
+        *
+        FROM
+        (SELECT
+        TASK_ID_, USER_ID_ USER_ID,GROUP_ID_ GROUP_ID
+        FROM
+        ACT_RU_IDENTITYLINK I, ACT_RU_TASK T
+        WHERE
+        TASK_ID_ IS NOT NULL
+        AND GROUP_ID_ IS NOT NULL
+        AND I.TASK_ID_ = T.ID_
+        AND T.ASSIGNEE_ IS NULL
+        AND TYPE_ = 'candidate') U) I ON A.ID_ = I.TASK_ID_
+        WHERE
+        A.SUSPENSION_STATE_ = '1'
+        AND I.GROUP_ID in
+        <foreach item="item" index="index" collection="list" open="("
+                 separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+</mapper>

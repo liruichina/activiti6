@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:tns="http://www.activiti.org/test" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" expressionLanguage="http://www.w3.org/1999/XPath" id="m1533881326106" name="" targetNamespace="http://www.activiti.org/test" typeLanguage="http://www.w3.org/2001/XMLSchema">
+  <process id="leave" isClosed="false" isExecutable="true" name="带有表单的请假流程" processType="None">
+    <documentation id="leave_D_1"><![CDATA[带有表单功能的请假流程，使用表单传递参数]]></documentation>
+    <startEvent id="startevent1" name="Start">
+      <extensionElements>
+        <activiti:formProperty datePattern="yyyy-MM-dd" id="startdate" name="请假开始日期" required="true" type="date"/>
+        <activiti:formProperty datePattern="yyyy-MM-dd" id="enddate" name="请假结束日期" required="true" type="date"/>
+        <activiti:formProperty id="reason" name="请假原因" required="true" type="string"/>
+      </extensionElements>
+    </startEvent>
+    <endEvent id="endevent1" name="End">
+      <extensionElements>
+        <activiti:formProperty datePattern="yyyy-MM-dd" id="startdate" name="请假开始日期" required="true" type="date"/>
+        <activiti:formProperty datePattern="yyyy-MM-dd" id="enddate" name="请假结束日期" required="true" type="date"/>
+        <activiti:formProperty id="reason" name="请假原因" required="true" type="string"/>
+        <activiti:formProperty id="memo" name="审批意见" required="true" type="string"/>
+        <activiti:formProperty id="postil" name="批注" required="true" type="string"/>
+      </extensionElements>
+    </endEvent>
+    <userTask activiti:assignee="user1" activiti:candidateGroups="Employee" activiti:exclusive="true" id="user1" name="提出申请">
+      <extensionElements>
+        <activiti:formProperty datePattern="yyyy-MM-dd" id="startdate" name="请假开始日期" required="true" type="date"/>
+        <activiti:formProperty datePattern="yyy-MM-dd" id="enddate" name="请假结束日期" required="true" type="date"/>
+        <activiti:formProperty id="reason" name="请假原因" required="true" type="string"/>
+        <activiti:formProperty id="memo" name="审批意见" required="true" type="enum">
+          <activiti:value id="true" name="同意"/>
+          <activiti:value id="false" name="拒绝"/>
+        </activiti:formProperty>
+      </extensionElements>
+    </userTask>
+    <userTask activiti:assignee="ccbuser" activiti:candidateGroups="ccb" activiti:exclusive="true" id="teamleader" name="主管审核">
+      <extensionElements>
+        <activiti:formProperty datePattern="yyyy-MM-dd" id="startdate" name="请假开始日期" required="true" type="date"/>
+        <activiti:formProperty datePattern="yyyy-MM-dd" id="enddate" name="请假结束日期" required="true" type="date"/>
+        <activiti:formProperty id="reason" name="请假原因" required="true" type="string"/>
+        <activiti:formProperty id="memo" name="审批意见" required="true" type="string"/>
+        <activiti:formProperty id="postil" name="批注" required="true" type="string"/>
+        <activiti:formProperty/>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="user1"/>
+    <sequenceFlow id="flow2" sourceRef="user1" targetRef="teamleader"/>
+    <sequenceFlow id="flow3" sourceRef="teamleader" targetRef="endevent1"/>
+  </process>
+  <bpmndi:BPMNDiagram documentation="background=#3C3F41;count=1;horizontalcount=1;orientation=0;width=842.4;height=1195.2;imageableWidth=832.4;imageableHeight=1185.2;imageableX=5.0;imageableY=5.0" id="Diagram-_1" name="New Diagram">
+    <bpmndi:BPMNPlane bpmnElement="leave">
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="Shape-startevent1">
+        <omgdc:Bounds height="32.0" width="32.0" x="80.0" y="250.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="32.0" width="32.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="Shape-endevent1">
+        <omgdc:Bounds height="32.0" width="32.0" x="640.0" y="250.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="32.0" width="32.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="user1" id="Shape-user1">
+        <omgdc:Bounds height="55.0" width="105.0" x="220.0" y="240.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="55.0" width="105.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="teamleader" id="Shape-teamleader">
+        <omgdc:Bounds height="55.0" width="105.0" x="400.0" y="240.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="55.0" width="105.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1" sourceElement="startevent1" targetElement="user1">
+        <omgdi:waypoint x="112.0" y="266.0"/>
+        <omgdi:waypoint x="220.0" y="267.5"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="-1.0" width="-1.0" x="-1.0" y="-1.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2" sourceElement="user1" targetElement="teamleader">
+        <omgdi:waypoint x="325.0" y="267.5"/>
+        <omgdi:waypoint x="400.0" y="267.5"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="-1.0" width="-1.0" x="-1.0" y="-1.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow3" id="BPMNEdge_flow3" sourceElement="teamleader" targetElement="endevent1">
+        <omgdi:waypoint x="505.0" y="267.5"/>
+        <omgdi:waypoint x="640.0" y="266.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="-1.0" width="-1.0" x="-1.0" y="-1.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>
